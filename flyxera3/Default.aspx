@@ -4,13 +4,34 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
-    <title></title>
+    <title>flyxera</title>
 </head>
 <body>
-    <form id="form1" runat="server">
-    <div>
-    
-    </div>
+    <p>Hello, world!</p>
+    <form runat="server">
+        <asp:ScriptManager runat="server" />
+        <asp:UpdatePanel runat="server">
+            <ContentTemplate>
+                <asp:Repeater ID="ListOfData" runat="server">
+                    <ItemTemplate>
+                        (
+                        <asp:Label runat="server" Text='<%#Eval("Email")%>' />
+                        ,
+                        <asp:Label runat="server" Text='<%#Eval("Name") %>' />
+                        )
+                        <br />
+                    </ItemTemplate>
+                </asp:Repeater>
+            </ContentTemplate>
+
+        </asp:UpdatePanel>
+
+        Email: 
+        <asp:TextBox ID="email" runat="server" /><br />
+        Name:
+        <asp:TextBox ID="name" runat="server" /><br />
+
+        <asp:Button runat="server" OnClick="Button_Click" />
     </form>
 </body>
 </html>
