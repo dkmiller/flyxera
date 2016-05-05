@@ -12,7 +12,7 @@
         <asp:ScriptManager runat="server" />
         <asp:UpdatePanel runat="server">
             <ContentTemplate>
-                <asp:Repeater ID="ListOfData" runat="server">
+                <asp:Repeater ID="ListOfUsers" runat="server">
                     <ItemTemplate>
                         (
                         <asp:Label runat="server" Text='<%#Eval("Email")%>' />
@@ -33,5 +33,7 @@
 
         <asp:Button runat="server" OnClick="Button_Click" />
     </form>
+
+    <script src="scripts.js"></script>
 </body>
 </html>

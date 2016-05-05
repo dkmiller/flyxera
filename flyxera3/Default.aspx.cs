@@ -11,11 +11,14 @@ namespace flyxera3
         const int LOOKUP = 0;
         const int UPDATE = 1;
 
-        static private Group flyxera;
+        private static Group flyxera;
         private static Dictionary<string, User> LocalUsers;
+        private static Dictionary<string, Offer> LocalOffers;
 
         protected void Page_Load(object sender, EventArgs e)
         {
+
+
             if (!IsPostBack)
             {
                 Environment.SetEnvironmentVariable("VSYNC_MUTE", "true");
@@ -36,19 +39,9 @@ namespace flyxera3
                 {
                     flyxera = new Group("flyxera");
                     flyxera.DHTEnable(1, 1, 1);
-                    flyxera.Handlers[LOOKUP] += (Action<string>)delegate (string s)
-                    {
-                        if (s == "all")
-                        {
-                            flyxera.Reply(new FlyxArray<User>(LocalUsers.Values.ToList()));
-                        }
-                        else
-                            throw new ArgumentException("bad string");
-                    };
-                    flyxera.Handlers[UPDATE] += (Action<User>)delegate (User u)
-                    {
-                        LocalUsers[u.Email] = u;
-                    };
+
+                    AddHandlers(flyxera);
+
 
                     flyxera.Join();
                 }
@@ -59,19 +52,17 @@ namespace flyxera3
         {
             flyxera.Send(UPDATE, new User(email.Text, name.Text));
 
-
-
-            //            flyxera.DHTOrderedPut<string, User>(email.Text, new User(email.Text, name.Text));
-
-            ListOfData.DataSource = LocalUsers.Values.ToList();
-            //            ListOfData.DataSource = LocalDht();
-            ListOfData.DataBind();
+            System.Diagnostics.Debug.WriteLine("!!FLYXERA: Sizeof(LocalUsers)==" + LocalUsers.Count);
+     
+            ListOfUsers.DataSource = LocalUsers.Values.ToList();
+            ListOfUsers.DataBind();
 
         }
 
-        private IEnumerable<User> LocalDht()
+        protected void AddHandlers(Group g)
         {
-            return flyxera.DHT<string, User>().ToList().Select(k => k.Value);
+            g.Handlers[UPDATE] += (Action<User>)(u => LocalUsers[u.Email] = u);
+            g.Handlers[UPDATE] += (Action<Offer>)(o => LocalOffers[o.Id] = o);
         }
     }
 }

@@ -13,13 +13,13 @@ namespace flyxera3 {
     public partial class WebForm1 {
         
         /// <summary>
-        /// ListOfData control.
+        /// ListOfUsers control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Repeater ListOfData;
+        protected global::System.Web.UI.WebControls.Repeater ListOfUsers;
         
         /// <summary>
         /// email control.
