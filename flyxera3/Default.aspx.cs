@@ -12,34 +12,32 @@ namespace flyxera3
         const int UPDATE = 1;
 
         private static Group flyxera;
+        private static User CurrentUser;
+        private static Place CurrentLocation;
         private static Dictionary<string, User> LocalUsers;
         private static Dictionary<string, Offer> LocalOffers;
 
         protected void Page_Load(object sender, EventArgs e)
         {
-
-
+            
             if (!IsPostBack)
             {
                 Environment.SetEnvironmentVariable("VSYNC_MUTE", "true");
                 Environment.SetEnvironmentVariable("VSYNC_LOGGED", "false");
 
-                System.Diagnostics.Debug.WriteLine("!!FLYXERA: VsyncIsActive==" + VsyncSystem.VsyncIsActive());
-
                 if (LocalUsers == null)
                     LocalUsers = new Dictionary<string, User>();
+                if (LocalOffers == null)
+                    LocalOffers = new Dictionary<string, Offer>();
 
                 if (!VsyncSystem.VsyncIsActive())
                 {
                     Msg.RegisterType<User>(0);
-                    Msg.RegisterType<FlyxArray<Table>>(1);
                     VsyncSystem.Start(true, true);
                 }
                 if (flyxera == null)
                 {
                     flyxera = new Group("flyxera");
-                    flyxera.DHTEnable(1, 1, 1);
-
                     AddHandlers(flyxera);
 
 
@@ -48,21 +46,39 @@ namespace flyxera3
             }
         }
 
-        protected void Button_Click(object sender, EventArgs e)
+        protected void DataAndLocation_Click(object sender, EventArgs e)
         {
+            firstLoad.Value = "foo";
             flyxera.Send(UPDATE, new User(email.Text, name.Text));
 
-            System.Diagnostics.Debug.WriteLine("!!FLYXERA: Sizeof(LocalUsers)==" + LocalUsers.Count);
-     
-            ListOfUsers.DataSource = LocalUsers.Values.ToList();
-            ListOfUsers.DataBind();
+            ListOfOffers.DataSource = LocalUsers.Values.ToList();
+            ListOfOffers.DataBind();
+        }
 
+        protected void ShowAllOffers_Click(object sender, EventArgs e)
+        {
+            throw new NotSupportedException("not supported");
+        }
+
+        protected void ShowMyOffers_Click(object sender, EventArgs e)
+        {
+            ListOfOffers.DataSource = LocalOffers.Values.Where(x => x.Offerer == CurrentUser);
+            ListOfOffers.DataBind();
         }
 
         protected void AddHandlers(Group g)
         {
             g.Handlers[UPDATE] += (Action<User>)(u => LocalUsers[u.Email] = u);
             g.Handlers[UPDATE] += (Action<Offer>)(o => LocalOffers[o.Id] = o);
+        }
+
+        public List<Offer> BestDeals(User u)
+        {
+            // Sort offers by distance to p
+            var sorted = from o in LocalOffers.Values orderby o.Location.DistanceTo(CurrentLocation) ascending select o;
+
+            // Return the first few offers.
+            return sorted.Take<Offer>(15).ToList<Offer>();
         }
     }
 }
