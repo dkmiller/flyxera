@@ -10,16 +10,20 @@ namespace flyxera3
         public string Email { get; set; }
         [DataMember]
         public string Name { get; set; }
-        public User(string email, string name)
+        [DataMember]
+        public string PhotoUrl { get; set; }
+
+        public User(string email, string name, string photoUrl)
         {
             Email = email;
             Name = name;
+            PhotoUrl = photoUrl;
         }
 
         // Vsync code
         public byte[] toBArray()
         {
-            return Msg.toBArray(Email, Name);
+            return Msg.toBArray(Email, Name, PhotoUrl);
         }
 
         public User(byte[] ba)
@@ -27,6 +31,7 @@ namespace flyxera3
             object[] os = Msg.BArrayToObjects(ba);
             Email = (string)os[0];
             Name = (string)os[1];
+            PhotoUrl = (string)os[2];
         }
     }
 }
