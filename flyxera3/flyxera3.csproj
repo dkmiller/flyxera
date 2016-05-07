@@ -77,6 +77,7 @@
     <Content Include="images\user.jpg" />
     <Content Include="packages.config" />
     <None Include="Properties\PublishProfiles\flyxera320160505110829 - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\flyxera320160507062717 - Web Deploy.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -186,21 +186,25 @@
                         function onSuccess(googleUser) {
                             var profile = googleUser.getBasicProfile();
                             console.log('Logged in as: ' + profile.getName());
-                            document.getElementById('<%=email.ClientID%>').value = profile.getEmail();
-                            document.getElementById('<%=name.ClientID%>').value = profile.getName();
-                            document.getElementById('<%=photoURL.ClientID%>').value = profile.getImageUrl();
+                            $('#<%=email.ClientID%>').val(profile.getEmail());
+                            $('#<%=name.ClientID%>').val(profile.getName());
+                            $('#<%=photoURL.ClientID%>').val(profile.getImageUrl());
+
+
                             getLocation(function (position) {
-                                document.getElementById('<%=latitude.ClientID%>').value = position.coords.latitude;
-                                document.getElementById('<%=longitude.ClientID%>').value = position.coords.longitude;
-                                document.getElementById("<%=sendLoginAndLocation.ClientID%>").click();
+                                $('#<%=latitude.ClientID%>').val(position.coords.latitude);
+                                $('#<%=longitude.ClientID%>').val(position.coords.longitude);
+                                $('<%=sendLoginAndLocation.ClientID%>').click();
                             })
                         }
+
                         function onFailure(error) {
                             console.log(error);
                         }
+
                         function renderButton() {
                             // Only sign in on first page load.
-                            if (!document.getElementById('<%=firstLoad.ClientID%>').value) {
+                            if('<%=Page.IsPostBack%>' == "False") {
                                 gapi.signin2.render('my-signin2', {
                                     'scope': 'profile email',
                                     'width': 240,
@@ -212,34 +216,35 @@
                                 });
                             }
                         }
-                        $('#createOfferButtonClient').click(function () {
-                            document.getElementById('<%=amount.ClientID%>').value = document.getElementById('offerAmountClient').value;
-                            document.getElementById('<%=shortDesc.ClientID%>').value = document.getElementById('offerShortDescriptionClient').value;
-                            document.getElementById('<%=longDesc.ClientID%>').value = document.getElementById('offerLongDescriptionClient').value;
-                            document.getElementById('<%=testCreateOffer.ClientID%>').click();
-                        });
-                        $('#createOfferFAB').click(function () {
-                            document.querySelector('#createOfferDialog').showModal();
-                        });
-                        $('#showOffersAll').click(function () {
-                            document.getElementById('ShowAllOffers').click();
-                        });
-                        $('#showOffersClient').click(function () {
-                            document.getElementById('ShowMyOffers').click();
-                        });
-                        $('#UpdatePanel1 .mdl-button').click(function () {
-                            var c = $(this).parents("div .mdl-card");
-                            var longDescription = c.find("span[id*=offerLongDescription]").text();
-                            var offererName = c.find("span[id*=offererName]").text();
-                            $("#offerLongText").text(longDescription);
-                            $("#offererName").text(offererName);
-                            document.querySelector('#viewOffer').showModal();
-                            return false;
-                        });
-                        $('#cancelOfferButton').click(function () {
-                            document.querySelector('#viewOffer').close();
-                        });
-                    </script>
+                    $('#createOfferButtonClient').click(function () {
+                        $('#<%=amount.ClientID%>').val($('#offerAmountClient').val());
+                        $('#<%=shortDesc.ClientID%>').val($('#offerShortDescriptionClient').val());
+                        $('#<%=longDesc.ClientID%>').val($('#offerLongDescriptionClient').val());
+                        $('#<%=testCreateOffer.ClientID%>').click();
+                    });
+                    $('#createOfferFAB').click(function () {
+                        document.querySelector('#createOfferDialog').showModal();
+                    });
+                    $('#showOffersAll').click(function () {
+                        $('#ShowAllOffers').click();
+                    });
+                    $('#showOffersClient').click(function () {
+                        $('#ShowMyOffers').click();
+                    });
+
+                    $('#UpdatePanel1 .mdl-button').click(function () {
+                        var c = $(this).parents("div .mdl-card");
+                        var longDescription = c.find("span[id*=offerLongDescription]").text();
+                        var offererName = c.find("span[id*=offererName]").text();
+                        $("#offerLongText").text(longDescription);
+                        $("#offererName").text(offererName);
+                        document.querySelector('#viewOffer').showModal();
+                        return false;
+                    });
+                    $('#cancelOfferButton').click(function () {
+                        $('#viewOffer').close();
+                    });
+                </script>
                     <script src="https://apis.google.com/js/platform.js?onload=renderButton" async defer></script>
                 </div>
             </div>
