@@ -22,6 +22,7 @@ namespace flyxera3
 
         protected void Page_Load(object sender, EventArgs e)
         {
+          
             if (!IsPostBack)
             {
                 Environment.SetEnvironmentVariable("VSYNC_MUTE", "true");
@@ -51,6 +52,7 @@ namespace flyxera3
 
         protected void DataAndLocation_Click(object sender, EventArgs e)
         {
+          
             Debug("DataAndLocation_Click");
 
             // Read user information and location from client.
@@ -87,6 +89,11 @@ namespace flyxera3
 
             ListOfOffers.DataSource = LocalOffers.Values.ToList();
             ListOfOffers.DataBind();
+        }
+
+        protected void AcceptButton_Click(object sender, EventArgs e)
+        {
+            // TODO
         }
 
         protected void ShowAllOffers_Click(object sender, EventArgs e)
