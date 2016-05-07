@@ -166,27 +166,80 @@
                             <i class="material-icons">add</i>
                         </button>
 
+                     <div id="my-signin2"></div>
+
     <script type="text/javascript">
         window.ispostback = '<%= Page.IsPostBack %>';
 
-        $("document").ready(function () {
-            if (window.ispostback == "False") {
-                $('#<%=email.ClientID%>').val("dm635@cornell.edu");
-                $('#<%=name.ClientID%>').val("Daniel Miller");
-                $('#<%=photoURL.ClientID%>').val("URL");
-                $('#<%=latitude.ClientID%>').val("42.3");
-                $('#<%=longitude.ClientID%>').val("41.5");
-                $('#<%=sendLoginAndLocation.ClientID%>').click();
-            }
-        });
-
-
-        $('#createOfferButtonClient').click(function () {
-            $('#<%=amount.ClientID%>').val($('#offerAmountClient').val());
-            $('#<%=shortDesc.ClientID%>').val($('#offerShortDescriptionClient').val());
-            $('#<%=longDesc.ClientID%>').val($('#offerLongDescriptionClient').val());
-            $('#<%=testCreateOffer.ClientID%>').click();
-        });
+        // Gets the location and, once it is known, evaluates callback on it.
+                        function getLocation(callback) {
+                            if (navigator.geolocation) {
+                                navigator.geolocation.getCurrentPosition(
+                                    function (position) {
+                                        callback(position);
+                                    }
+                                );
+                            } else {
+                                // TODO: error here. 
+                            }
+                        }
+                        // Called after the user has signed in.
+                        function onSuccess(googleUser) {
+                            var profile = googleUser.getBasicProfile();
+                            console.log('Logged in as: ' + profile.getName());
+                            document.getElementById('<%=email.ClientID%>').value = profile.getEmail();
+                            document.getElementById('<%=name.ClientID%>').value = profile.getName();
+                            document.getElementById('<%=photoURL.ClientID%>').value = profile.getImageUrl();
+                            getLocation(function (position) {
+                                document.getElementById('<%=latitude.ClientID%>').value = position.coords.latitude;
+                                document.getElementById('<%=longitude.ClientID%>').value = position.coords.longitude;
+                                document.getElementById("<%=sendLoginAndLocation.ClientID%>").click();
+                            })
+                        }
+                        function onFailure(error) {
+                            console.log(error);
+                        }
+                        function renderButton() {
+                            // Only sign in on first page load.
+                            if (!window.ispostback) {
+                                gapi.signin2.render('my-signin2', {
+                                    'scope': 'profile email',
+                                    'width': 240,
+                                    'height': 50,
+                                    'longtitle': true,
+                                    'theme': 'dark',
+                                    'onsuccess': onSuccess,
+                                    'onfailure': onFailure
+                                });
+                            }
+                        }
+                        $('#createOfferButtonClient').click(function () {
+                            document.getElementById('<%=amount.ClientID%>').value = document.getElementById('offerAmountClient').value;
+                            document.getElementById('<%=shortDesc.ClientID%>').value = document.getElementById('offerShortDescriptionClient').value;
+                            document.getElementById('<%=longDesc.ClientID%>').value = document.getElementById('offerLongDescriptionClient').value;
+                            document.getElementById('<%=testCreateOffer.ClientID%>').click();
+                        });
+                        $('#createOfferFAB').click(function () {
+                            document.querySelector('#createOfferDialog').showModal();
+                        });
+                        $('#showOffersAll').click(function () {
+                            document.getElementById('ShowAllOffers').click();
+                        });
+                        $('#showOffersClient').click(function () {
+                            document.getElementById('ShowMyOffers').click();
+                        });
+                        $('#UpdatePanel1 .mdl-button').click(function () {
+                            var c = $(this).parents("div .mdl-card");
+                            var longDescription = c.find("span[id*=offerLongDescription]").text();
+                            var offererName = c.find("span[id*=offererName]").text();
+                            $("#offerLongText").text(longDescription);
+                            $("#offererName").text(offererName);
+                            document.querySelector('#viewOffer').showModal();
+                            return false;
+                        });
+                        $('#cancelOfferButton').click(function () {
+                            document.querySelector('#viewOffer').close();
+                        });
     </script>
                     </div>
 
