@@ -23,7 +23,10 @@ namespace flyxera3
         // Vsync code
         public byte[] toBArray()
         {
-            return Msg.toBArray(Email, Name, PhotoUrl);
+            WebForm1.Debug("User toBArray 1");
+            byte[] ba = Msg.toBArray(Email, Name, PhotoUrl);
+            WebForm1.Debug("User toBArray 2");
+            return ba;
         }
 
         public User(byte[] ba)

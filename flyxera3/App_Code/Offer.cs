@@ -12,11 +12,11 @@ namespace flyxera3
         [DataMember]
         public string Id { get; set; }
         [DataMember]
-        public double Amount { get; set; }
+        public string Amount { get; set; }
         [DataMember]
         public Place Location { get; set; }
         [DataMember]
-        public DateTime Time { get; set; }
+        public string Time { get; set; }
         [DataMember]
         public string ShortDescription { get; set; }
         [DataMember]
@@ -32,9 +32,9 @@ namespace flyxera3
             rng.GetBytes(token);
             Id = Convert.ToBase64String(token);
 
-            Amount = Convert.ToDouble(amount);
+            Amount = amount;
             Location = location;
-            Time = time;
+            Time = time.ToString();
             ShortDescription = shortDescription;
             LongDescription = longDescription;
             Offerer = offerer;
@@ -44,32 +44,27 @@ namespace flyxera3
         // Implement ISelfMarshalled.
         public Offer(byte[] ba)
         {
-            WebForm1.Debug("before Offer(byte[])");
             object[] os = Msg.BArrayToObjects(ba);
-            WebForm1.Debug("after BArrayToObjects");
-            var i = 0;
-            Id = (string)os[i++];
-            Amount = (double)os[i++];
-            Location = (Place)os[i++];
-            Time = (DateTime)os[i++];
-            ShortDescription = (string)os[i++];
-            LongDescription = (string)os[i++];
-            Offerer = (User)os[i++];
-            WebForm1.Debug("after Offer(byte[])");
+
+            Id = (string)os[0];
+            Amount = (string)os[1];
+            Location = (Place)os[2];
+            Time = (string)os[3];
+            ShortDescription = (string)os[4];
+            LongDescription = (string)os[5];
+            Offerer = (User)os[6];
         }
 
         public byte[] toBArray()
         {
-            WebForm1.Debug("before toBArray");
-            WebForm1.Debug("Id: " + Id);
-            WebForm1.Debug("Amount: " + Amount);
-            WebForm1.Debug("(Latitude,Longitude): " + Location.Latitude + "," + Location.Longitude);
-            WebForm1.Debug("ShortDescription: " + ShortDescription);
-            WebForm1.Debug("LongDescription: " + LongDescription);
-            WebForm1.Debug("(Email,Name,PhotoUrl): " + Offerer.Email + "," + Offerer.Name + "," + Offerer.PhotoUrl);
-            byte[] ba = Msg.toBArray(Id, (object)Amount, Location, ShortDescription, LongDescription, Offerer);
-            WebForm1.Debug("after toBArray");
-            return ba;
+            return Msg.toBArray(
+                Id, 
+                Amount, 
+                Location, 
+                Time,
+                ShortDescription, 
+                LongDescription, 
+                Offerer);
         }
     }
 }

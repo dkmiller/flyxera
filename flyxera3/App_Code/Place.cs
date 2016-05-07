@@ -1,8 +1,9 @@
 ﻿using System;
+using Vsync;
 
 namespace flyxera3
 {
-    public class Place
+    public class Place : ISelfMarshalled
     {
         public double Latitude;
         public double Longitude;
@@ -39,6 +40,19 @@ namespace flyxera3
         private double ToRadians(double θ)
         {
             return (Math.PI / 180) * θ;
+        }
+
+        // Vsync code.
+        public Place(byte[] ba)
+        {
+            var os = Msg.BArrayToObjects(ba);
+            Latitude = (double)os[0];
+            Longitude = (double)os[1];
+        }
+
+        public byte[] toBArray()
+        {
+            return Msg.toBArray(Latitude, Longitude);
         }
     }
 }

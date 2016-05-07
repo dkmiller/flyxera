@@ -77,7 +77,6 @@
 
         $("document").ready(function () {
             if (window.ispostback == "False") {
-                alert('going to click');
                 $('#<%=email.ClientID%>').val("dm635@cornell.edu");
                 $('#<%=name.ClientID%>').val("Daniel Miller");
                 $('#<%=photoURL.ClientID%>').val("URL");

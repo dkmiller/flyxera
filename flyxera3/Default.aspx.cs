@@ -22,22 +22,6 @@ namespace flyxera3
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            Debug("before BA");
-            byte[] ba1 = Msg.toBArray(1);
-            Debug("intermediate");
-            byte[] ba = Msg.toBArray(
-                "Id", 
-                (object)1, 
-                new Place("42.3", "41.5"),
-                "ShortDescription", 
-                "LongDescription", 
-                new User("dm635@cornell.edu", "Daniel Miller", "URL"));
-            Debug("after BA");
-
-
-
-
-
             if (!IsPostBack)
             {
                 Environment.SetEnvironmentVariable("VSYNC_MUTE", "true");
@@ -52,6 +36,7 @@ namespace flyxera3
                 {
                     Msg.RegisterType<User>(0);
                     Msg.RegisterType<Offer>(1);
+                    Msg.RegisterType<Place>(2);
                     VsyncSystem.Start(true, true);
                 }
                 if (flyxera == null)
@@ -61,6 +46,7 @@ namespace flyxera3
                     flyxera.Join();
                 }
             }
+
         }
 
         protected void DataAndLocation_Click(object sender, EventArgs e)
@@ -80,7 +66,7 @@ namespace flyxera3
 
         protected void TestCreateOffer_Click(object sender, EventArgs e)
         {
-            Debug("TestCreateOffer_Click");
+            Debug("TestCreateOffer_Click 1");
 
 
             // Read offer information from client.
@@ -94,9 +80,9 @@ namespace flyxera3
 
             // Send offer information to group. 
             Task.Factory.StartNew(() => {
-                Debug("send");
+                Debug("send Offer 1");
                 flyxera.Send(UPDATE, CurrentOffer);
-                Debug("sent");
+                Debug("send Offer 2");
             });
 
             ListOfOffers.DataSource = LocalOffers.Values.ToList();
@@ -121,17 +107,14 @@ namespace flyxera3
         {
             flyxera.Handlers[UPDATE] += (Action<User>)delegate (User u)
             {
-                Debug("Update(User) handler");
                 if (!LocalUsers.ContainsKey(u.Email))
                     LocalUsers.Add(u.Email, u);
             };
             flyxera.Handlers[UPDATE] += (Action<Offer>)delegate (Offer o) {
-                Debug("Update(Offer) handler");
                 if (!LocalOffers.ContainsKey(o.Id))
                     LocalOffers.Add(o.Id, o);
             };
        
-//            flyxera.Handlers[UPDATE] += (Action<Offer>)(o => LocalOffers[o.Id] = o);
         }
 
         public List<Offer> BestDeals(User u)
