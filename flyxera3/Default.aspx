@@ -166,12 +166,11 @@
                             <i class="material-icons">add</i>
                         </button>
 
-                     <div id="my-signin2"></div>
+                    <div id="my-signin2"></div>
 
-    <script type="text/javascript">
-        window.ispostback = '<%= Page.IsPostBack %>';
-
-        // Gets the location and, once it is known, evaluates callback on it.
+                <script type="text/javascript">
+ 
+                      // Gets the location and, once it is known, evaluates callback on it.
                         function getLocation(callback) {
                             if (navigator.geolocation) {
                                 navigator.geolocation.getCurrentPosition(
@@ -201,7 +200,7 @@
                         }
                         function renderButton() {
                             // Only sign in on first page load.
-                            if (!window.ispostback) {
+                            if (!document.getElementById('<%=firstLoad.ClientID%>').value) {
                                 gapi.signin2.render('my-signin2', {
                                     'scope': 'profile email',
                                     'width': 240,
@@ -240,9 +239,9 @@
                         $('#cancelOfferButton').click(function () {
                             document.querySelector('#viewOffer').close();
                         });
-    </script>
-                    </div>
-
+                    </script>
+                    <script src="https://apis.google.com/js/platform.js?onload=renderButton" async defer></script>
+                </div>
             </div>
         </main>
     </div>
