@@ -21,15 +21,18 @@ namespace flyxera3
         private static Dictionary<string, Offer> LocalOffers;
 
         protected void Page_Load(object sender, EventArgs e)
-        {
-          
+        { 
             if (!IsPostBack)
             {
                 Environment.SetEnvironmentVariable("VSYNC_MUTE", "true");
                 Environment.SetEnvironmentVariable("VSYNC_LOGGED", "false");
 
                 if (LocalUsers == null)
-                    LocalUsers = new Dictionary<string, User>();
+                    LocalUsers = new Dictionary<string, User> {
+                        {"dm635@cornell.edu", new User("dm635@cornell.edu", "Daniel Miller", "URL") },
+                        {"awg66@cornell.edu",  new User("awg66@cornell.edu", "Alex Gato", "URL") },
+                        {"em569@cornell.edu", new User("em569@cornell.edu", "Ege Mihmanli", "URL") }
+                    };
                 if (LocalOffers == null)
                     LocalOffers = new Dictionary<string, Offer>();
 
@@ -59,6 +62,8 @@ namespace flyxera3
             CurrentUser = new User(email.Value, name.Value, photoURL.Value);
             CurrentLocation = new Place(latitude.Value, longitude.Value);
 
+            Debug(CurrentUser.Email);
+
             if (!LocalUsers.ContainsKey(email.Value))
                 Task.Factory.StartNew(() => { flyxera.Send(UPDATE, CurrentUser); });
             
@@ -68,7 +73,7 @@ namespace flyxera3
 
         protected void TestCreateOffer_Click(object sender, EventArgs e)
         {
-            Debug("TestCreateOffer_Click 1");
+//            Debug("TestCreateOffer_Click 1");
 
 
             // Read offer information from client.
@@ -82,9 +87,7 @@ namespace flyxera3
 
             // Send offer information to group. 
             Task.Factory.StartNew(() => {
-                Debug("send Offer 1");
                 flyxera.Send(UPDATE, CurrentOffer);
-                Debug("send Offer 2");
             });
 
             ListOfOffers.DataSource = LocalOffers.Values.ToList();
@@ -99,8 +102,11 @@ namespace flyxera3
         protected void ShowAllOffers_Click(object sender, EventArgs e)
         {
             // TODO: only best offers
-            ListOfOffers.DataSource = LocalOffers.Values.ToList();
-            ListOfOffers.DataBind();
+            if(LocalOffers != null)
+            {
+                ListOfOffers.DataSource = LocalOffers.Values.ToList();
+                ListOfOffers.DataBind();
+            }
         }
 
         protected void ShowMyOffers_Click(object sender, EventArgs e)

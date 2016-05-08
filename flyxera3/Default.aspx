@@ -182,40 +182,23 @@
                                 // TODO: error here. 
                             }
                         }
-                        // Called after the user has signed in.
-                        function onSuccess(googleUser) {
-                            var profile = googleUser.getBasicProfile();
-                            console.log('Logged in as: ' + profile.getName());
-                            $('#<%=email.ClientID%>').val(profile.getEmail());
-                            $('#<%=name.ClientID%>').val(profile.getName());
-                            $('#<%=photoURL.ClientID%>').val(profile.getImageUrl());
+                    
 
-
-                            getLocation(function (position) {
-                                $('#<%=latitude.ClientID%>').val(position.coords.latitude);
-                                $('#<%=longitude.ClientID%>').val(position.coords.longitude);
-                                $('<%=sendLoginAndLocation.ClientID%>').click();
-                            })
-                        }
-
-                        function onFailure(error) {
-                            console.log(error);
-                        }
 
                         function renderButton() {
                             // Only sign in on first page load.
                             if('<%=Page.IsPostBack%>' == "False") {
-                                gapi.signin2.render('my-signin2', {
-                                    'scope': 'profile email',
-                                    'width': 240,
-                                    'height': 50,
-                                    'longtitle': true,
-                                    'theme': 'dark',
-                                    'onsuccess': onSuccess,
-                                    'onfailure': onFailure
-                                });
+                                $('#<%=email.ClientID%>').val("sample@example.com");
+                                $('#<%=name.ClientID%>').val("John Doe");
+                                $('#<%=photoURL.ClientID%>').val("URL");
+
+                                $('#<%=latitude.ClientID%>').val("41.5");
+                                $('#<%=longitude.ClientID%>').val("53.4343");
+                                $('#<%=sendLoginAndLocation.ClientID%>').click();
+
                             }
                         }
+
                     $('#createOfferButtonClient').click(function () {
                         $('#<%=amount.ClientID%>').val($('#offerAmountClient').val());
                         $('#<%=shortDesc.ClientID%>').val($('#offerShortDescriptionClient').val());
