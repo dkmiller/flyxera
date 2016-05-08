@@ -28,11 +28,7 @@ namespace flyxera3
                 Environment.SetEnvironmentVariable("VSYNC_LOGGED", "false");
 
                 if (LocalUsers == null)
-                    LocalUsers = new Dictionary<string, User> {
-                        {"dm635@cornell.edu", new User("dm635@cornell.edu", "Daniel Miller", "URL") },
-                        {"awg66@cornell.edu",  new User("awg66@cornell.edu", "Alex Gato", "URL") },
-                        {"em569@cornell.edu", new User("em569@cornell.edu", "Ege Mihmanli", "URL") }
-                    };
+                    LocalUsers = new Dictionary<string, User>();
                 if (LocalOffers == null)
                     LocalOffers = new Dictionary<string, Offer>();
 
@@ -47,6 +43,9 @@ namespace flyxera3
                 {
                     flyxera = new Group("flyxera");
                     AddHandlers();
+                    /*Debug("before persist");
+                    flyxera.Persistent("flyxera");
+                    Debug("after persist");*/
                     flyxera.Join();
                 }
             }
@@ -118,17 +117,40 @@ namespace flyxera3
 
         protected void AddHandlers()
         {
-            flyxera.Handlers[UPDATE] += (Action<User>)delegate (User u)
+            flyxera.RegisterHandler(UPDATE, (Action<User>)delegate (User u)
             {
                 if (!LocalUsers.ContainsKey(u.Email))
                     LocalUsers.Add(u.Email, u);
-            };
-            flyxera.Handlers[UPDATE] += (Action<Offer>)delegate (Offer o) {
+            });
+            flyxera.RegisterHandler(UPDATE, (Action<Offer>)delegate (Offer o) {
                 if (!LocalOffers.ContainsKey(o.Id))
                     LocalOffers.Add(o.Id, o);
-            };
-       
+            });
+            flyxera.RegisterMakeChkpt(delegate (Vsync.View nv)
+            {
+                foreach(User u in LocalUsers.Values)
+                    flyxera.SendChkpt(u);
+                foreach(Offer o in LocalOffers.Values)
+                    flyxera.SendChkpt(o);
+                flyxera.EndOfChkpt();
+            });
+            
+            flyxera.RegisterLoadChkpt((Action<User>)delegate (User u) {
+                LocalUsers[u.Email] = u;
+            });
+            flyxera.RegisterLoadChkpt((Action<Offer>)delegate (Offer o) {
+                LocalOffers[o.Id] = o;
+            });
+
+            flyxera.RegisterInitializer(delegate {
+                LocalUsers["dm635@cornell.edu"] = new User("dm635@cornell.edu", "Daniel Miller", "URL");
+
+                //        { "awg66@cornell.edu",  new User("awg66@cornell.edu", "Alex Gato", "URL") },
+                //        { "em569@cornell.edu", new User("em569@cornell.edu", "Ege Mihmanli", "URL") }
+                
+            });
         }
+
 
         public List<Offer> BestDeals(User u)
         {
