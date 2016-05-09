@@ -25,8 +25,6 @@ namespace flyxera3
         private static Dictionary<string, User> LocalUsers;
         private static Dictionary<string, Offer> LocalOffers;
 
-        // private static int PersistCounter = 0;
-
         protected void Page_Load(object sender, EventArgs e)
         { 
             if (!IsPostBack)
@@ -59,21 +57,13 @@ namespace flyxera3
                         LocalUsers = LoadFromFile<User>(USER_FILE);
                         LocalOffers = LoadFromFile<Offer>(OFFER_FILE);
                     }
-
-                    /* Debug("before persist");
-                     flyxera.Persistent("flyxera");
-                     Debug("after persist"); */
                 }
             }
-
         }
 
         private void DumpToFile(string filename, object o)
         {
             var jsonString = JsonConvert.SerializeObject(o);
-
-            Debug(jsonString);
-
             File.WriteAllText(filename, jsonString);
         }
 
@@ -91,27 +81,20 @@ namespace flyxera3
 
         protected void DataAndLocation_Click(object sender, EventArgs e)
         {
-          
-            Debug("DataAndLocation_Click");
-
             // Read user information and location from client.
             CurrentUser = new User(email.Value, name.Value, photoURL.Value);
             CurrentLocation = new Place(latitude.Value, longitude.Value);
-
-            Debug(CurrentUser.Email);
-
             if (!LocalUsers.ContainsKey(email.Value))
-                Task.Factory.StartNew(() => { flyxera.Send(UPDATE, CurrentUser); });
-            
-            ListOfOffers.DataSource = LocalOffers.Values.ToList();
-            ListOfOffers.DataBind();
+                Task.Factory.StartNew(
+                    () =>
+                    {
+                        flyxera.Send(UPDATE, CurrentUser);
+                    });
+            UpdateOffers();
         }
 
         protected void TestCreateOffer_Click(object sender, EventArgs e)
         {
-//            Debug("TestCreateOffer_Click 1");
-
-
             // Read offer information from client.
             CurrentOffer = new Offer(
                 amount.Value,
@@ -121,34 +104,31 @@ namespace flyxera3
                 longDesc.Value,
                 CurrentUser);
 
-            // Send offer information to group. 
-            Task.Factory.StartNew(() => {
-                flyxera.Send(UPDATE, CurrentOffer);
-                // Debug("Before make checkpoint: " + LocalOffers.FirstOrDefault().Key);
-                // flyxera.MakeCheckpoint(flyxera.GetView());
-         /*       foreach (var o in LocalOffers.Values)
-                    Debug("Dumping " + o.Id); */
-                DumpToFile(USER_FILE, LocalUsers);
-                DumpToFile(OFFER_FILE, LocalOffers);
-            });
+            LocalOffers.Add(CurrentOffer.Id, CurrentOffer);
 
-            ListOfOffers.DataSource = LocalOffers.Values.ToList();
-            ListOfOffers.DataBind();
+            // Send offer information to group. 
+            Task.Factory.StartNew(
+                () =>
+                {
+                    flyxera.Send(UPDATE, CurrentOffer);
+                    DumpToFile(USER_FILE, LocalUsers);
+                    DumpToFile(OFFER_FILE, LocalOffers);
+                });
+            UpdateOffers();
         }
 
         protected void AcceptButton_Click(object sender, EventArgs e)
         {
-            Debug("Not implemented");
+            Debug("Accept Not implemented");
+            Debug("Deleting: " + Id.Value);
+            LocalOffers.Remove(Id.Value);
+
+            UpdateOffers();
         }
 
         protected void ShowAllOffers_Click(object sender, EventArgs e)
         {
-            // TODO: only best offers
-            if(LocalOffers != null)
-            {
-                ListOfOffers.DataSource = LocalOffers.Values.ToList();
-                ListOfOffers.DataBind();
-            }
+            UpdateOffers();
         }
 
         protected void ShowMyOffers_Click(object sender, EventArgs e)
@@ -191,26 +171,24 @@ namespace flyxera3
             });
             
             flyxera.RegisterLoadChkpt((Action<User>)delegate (User u) {
-                Debug("Load checkpoint(User) " + u.Email);
                 LocalUsers[u.Email] = u;
             });
             flyxera.RegisterLoadChkpt((Action<Offer>)delegate (Offer o) {
-                Debug("Load checkpoint(Offer)" + o.ShortDescription);
                 LocalOffers[o.Id] = o;
             });
         }
 
 
-        public List<Offer> BestDeals(User u)
+        public void UpdateOffers()
         {
             // Sort offers by distance to p
             var sorted = from o
                          in LocalOffers.Values
                          orderby o.Location.DistanceTo(CurrentLocation) ascending
                          select o;
-
-            // Return the first few offers.
-            return sorted.Take<Offer>(200).ToList<Offer>();
+            
+            ListOfOffers.DataSource = sorted.Take<Offer>(200);
+            ListOfOffers.DataBind();
         }
 
 

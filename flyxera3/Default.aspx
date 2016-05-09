@@ -91,6 +91,7 @@
                                                 <asp:Label class="style: hidden" runat="server" ID="offerLongDescription" Text='<%#Eval("LongDescription")%>' />
                                                 <asp:Label class="style: hidden" runat="server" ID="offerLatitude" Text='<%#Eval("Location.Latitude") %>' />
                                                 <asp:Label class="style: hidden" runat="server" ID="offerLongitude" Text='<%#Eval("Location.Longitude") %>' />
+                                                <asp:Label class="style: hidden" runat="server" ID="offerIdClient" Text='<%#Eval("Id") %>'/>
                                             </div>
                                             <div class="mdl-card__actions mdl-card--border">
                                                 <button type="button" class="mdl-button mdl-js-button mdl-js-ripple-effect">Go to offer</button>
@@ -113,7 +114,7 @@
                                 <p id="offerLongText" />
                             </div>
                             <div class="mdl-dialog__actions">
-                                <asp:Button ID="acceptOfferButton" Text="Accept" runat="server" OnClick="AcceptButton_Click" class="mdl-button mdl-js-button mdl-js-ripple-effect" />
+                                <button id="acceptOfferButtonClient" type="button" class="mdl-button mdl-js-button mdl-js-ripple-effect">Accept</button>
                                 <button id="cancelOfferButton" type="button" class="mdl-button close">Cancel</button>
                             </div>
                         </dialog>
@@ -134,6 +135,9 @@
 
                         <asp:Button ID="ShowAllOffers" OnClick="ShowAllOffers_Click" runat="server" Style="display: none"/>
                         <asp:Button ID="ShowMyOffers" OnClick="ShowMyOffers_Click" runat="server" Style="display: none"/>
+                        
+                        <asp:HiddenField ID="Id" runat="server" />
+                        <asp:Button ID="acceptOfferButton" OnClick="AcceptButton_Click" runat="server" Style="display: none" />
 
 
                     </form>
@@ -211,14 +215,21 @@
                         $('#ShowMyOffers').click();
                     });
 
+                    $('#acceptOfferButtonClient').click(function () {
+                        $('#<%=acceptOfferButton.ClientID%>').click();
+                    });
+
                     $('#UpdatePanel1 .mdl-button').click(function () {
                         var c = $(this).parents("div .mdl-card");
                         var longDescription = c.find("span[id*=offerLongDescription]").text();
                         var offererName = c.find("span[id*=offererName]").text();
+                        var offerId = c.find("span[id*=offerIdClient]").text();
 
                         var latitude = c.find("span[id*=offerLatitude]").text();
                         var longitude = c.find("span[id*=offerLongitude]").text();
 
+
+                        $('#<%=Id.ClientID%>').val(offerId);
                         $("#offerLongText").text(longDescription);
                         $("#offererName").text(offererName);
                         $('#linkToOfferLocation').text('(' + latitude + ',' + longitude + ',');
