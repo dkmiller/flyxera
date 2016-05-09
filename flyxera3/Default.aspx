@@ -89,6 +89,8 @@
                                                     <asp:Label runat="server" ID="offerShortDescription" Text='<%#Eval("ShortDescription") %>' />
                                                 </p>
                                                 <asp:Label class="style: hidden" runat="server" ID="offerLongDescription" Text='<%#Eval("LongDescription")%>' />
+                                                <asp:Label class="style: hidden" runat="server" ID="offerLatitude" Text='<%#Eval("Location.Latitude") %>' />
+                                                <asp:Label class="style: hidden" runat="server" ID="offerLongitude" Text='<%#Eval("Location.Longitude") %>' />
                                             </div>
                                             <div class="mdl-card__actions mdl-card--border">
                                                 <button type="button" class="mdl-button mdl-js-button mdl-js-ripple-effect">Go to offer</button>
@@ -107,6 +109,7 @@
                                 <label id="offererName" />
                             </h4>
                             <div class="mdl-dialog__content">
+                                <a href="xxx" id="linkToOfferLocation"></a>
                                 <p id="offerLongText" />
                             </div>
                             <div class="mdl-dialog__actions">
@@ -212,8 +215,15 @@
                         var c = $(this).parents("div .mdl-card");
                         var longDescription = c.find("span[id*=offerLongDescription]").text();
                         var offererName = c.find("span[id*=offererName]").text();
+
+                        var latitude = c.find("span[id*=offerLatitude]").text();
+                        var longitude = c.find("span[id*=offerLongitude]").text();
+
                         $("#offerLongText").text(longDescription);
                         $("#offererName").text(offererName);
+                        $('#linkToOfferLocation').text('(' + latitude + ',' + longitude + ',');
+                        $("#linkToOfferLocation").attr("href",
+                            "http://maps.google.com/?q=" + latitude + "," + longitude);
                         document.querySelector('#viewOffer').showModal();
                         return false;
                     });

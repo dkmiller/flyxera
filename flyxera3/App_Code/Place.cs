@@ -12,6 +12,8 @@ namespace flyxera3
         [DataMember]
         public double Longitude { get; set; }
 
+        public Place() { }
+
         public Place(string latitude, string longitude)
         {
             Latitude = Convert.ToDouble(latitude);

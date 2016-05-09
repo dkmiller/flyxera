@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.UI.WebControls;
 using Vsync;
+using Newtonsoft.Json;
 
 namespace flyxera3
 {
@@ -11,6 +13,8 @@ namespace flyxera3
     {
         const int UPDATE = 0;
         const int REMOVE = 1;
+        const string USER_FILE = "flyxera-User.json";
+        const string OFFER_FILE = "flyxera-Offer.json";
 
         private static Group flyxera;
 
@@ -20,6 +24,8 @@ namespace flyxera3
 
         private static Dictionary<string, User> LocalUsers;
         private static Dictionary<string, Offer> LocalOffers;
+
+        // private static int PersistCounter = 0;
 
         protected void Page_Load(object sender, EventArgs e)
         { 
@@ -47,12 +53,40 @@ namespace flyxera3
                     
                     flyxera.Join();
 
-                    Debug("before persist");
-                    flyxera.Persistent("flyxera");
-                    Debug("after persist");
+                    // Only load from file if initializing the group. 
+                    if (flyxera.GetSize() == 1)
+                    {
+                        LocalUsers = LoadFromFile<User>(USER_FILE);
+                        LocalOffers = LoadFromFile<Offer>(OFFER_FILE);
+                    }
+
+                    /* Debug("before persist");
+                     flyxera.Persistent("flyxera");
+                     Debug("after persist"); */
                 }
             }
 
+        }
+
+        private void DumpToFile(string filename, object o)
+        {
+            var jsonString = JsonConvert.SerializeObject(o);
+
+            Debug(jsonString);
+
+            File.WriteAllText(filename, jsonString);
+        }
+
+        private Dictionary<string, T> LoadFromFile<T>(string filename)
+        {
+            if (File.Exists(filename))
+            {
+                using (StreamReader r = new StreamReader(filename))
+                    return JsonConvert.DeserializeObject<Dictionary<string,T>>(r.ReadToEnd());
+            } else
+            {
+                return new Dictionary<string, T>();
+            }
         }
 
         protected void DataAndLocation_Click(object sender, EventArgs e)
@@ -90,8 +124,12 @@ namespace flyxera3
             // Send offer information to group. 
             Task.Factory.StartNew(() => {
                 flyxera.Send(UPDATE, CurrentOffer);
-                Debug("Before make checkpoint: " + LocalOffers.FirstOrDefault().Key);
-                flyxera.MakeCheckpoint(flyxera.GetView());
+                // Debug("Before make checkpoint: " + LocalOffers.FirstOrDefault().Key);
+                // flyxera.MakeCheckpoint(flyxera.GetView());
+         /*       foreach (var o in LocalOffers.Values)
+                    Debug("Dumping " + o.Id); */
+                DumpToFile(USER_FILE, LocalUsers);
+                DumpToFile(OFFER_FILE, LocalOffers);
             });
 
             ListOfOffers.DataSource = LocalOffers.Values.ToList();
@@ -100,7 +138,7 @@ namespace flyxera3
 
         protected void AcceptButton_Click(object sender, EventArgs e)
         {
-            
+            Debug("Not implemented");
         }
 
         protected void ShowAllOffers_Click(object sender, EventArgs e)
@@ -160,15 +198,6 @@ namespace flyxera3
                 Debug("Load checkpoint(Offer)" + o.ShortDescription);
                 LocalOffers[o.Id] = o;
             });
-            /*
-            flyxera.RegisterInitializer(delegate {
-                LocalUsers["dm635@cornell.edu"] = new User("dm635@cornell.edu", "Daniel Miller", "URL");
-
-                //        { "awg66@cornell.edu",  new User("awg66@cornell.edu", "Alex Gato", "URL") },
-                //        { "em569@cornell.edu", new User("em569@cornell.edu", "Ege Mihmanli", "URL") }
-                
-            });
-            */
         }
 
 

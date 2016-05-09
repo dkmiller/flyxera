@@ -13,6 +13,8 @@ namespace flyxera3
         [DataMember]
         public string PhotoUrl { get; set; }
 
+        public User() { }
+
         public User(string email, string name, string photoUrl)
         {
             Email = email;

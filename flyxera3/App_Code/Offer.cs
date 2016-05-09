@@ -27,6 +27,8 @@ namespace flyxera3
         private static RandomNumberGenerator rng = new RNGCryptoServiceProvider();
         private static byte[] token = new byte[32];
 
+        public Offer() { }
+
         public Offer(string amount, Place location, DateTime time, string shortDescription, string longDescription, User offerer)
         {
             rng.GetBytes(token);
