@@ -1,11 +1,10 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web.UI.WebControls;
 using Vsync;
-using Newtonsoft.Json;
 
 namespace flyxera3
 {
@@ -119,10 +118,14 @@ namespace flyxera3
 
         protected void AcceptButton_Click(object sender, EventArgs e)
         {
-            Debug("Accept Not implemented");
-            Debug("Deleting: " + Id.Value);
             LocalOffers.Remove(Id.Value);
-
+            Task.Factory.StartNew(
+             () =>
+             {
+                 flyxera.Send(REMOVE, Id.Value);
+                 DumpToFile(USER_FILE, LocalUsers);
+                 DumpToFile(OFFER_FILE, LocalOffers);
+             });
             UpdateOffers();
         }
 
@@ -154,20 +157,20 @@ namespace flyxera3
                 if (!LocalOffers.ContainsKey(o.Id))
                     LocalOffers.Add(o.Id, o);
             });
+            flyxera.RegisterHandler(REMOVE, (Action<string>)delegate (string id) {
+                if (LocalOffers.ContainsKey(id))
+                    LocalOffers.Remove(id);
+            });
             flyxera.RegisterMakeChkpt(delegate (Vsync.View nv)
             {
-                Debug("Begin make checkpoint");
                 foreach (User u in LocalUsers.Values) {
-                    Debug("Sending user " + u.Email);
                     flyxera.SendChkpt(u);
                 }
                 foreach (Offer o in LocalOffers.Values)
                 {
-                    Debug("Sending Offer: " + o.ShortDescription);
                     flyxera.SendChkpt(o);
                 }
                 flyxera.EndOfChkpt();
-                Debug("End make checkpoint");
             });
             
             flyxera.RegisterLoadChkpt((Action<User>)delegate (User u) {
