@@ -170,20 +170,6 @@
 
                 <script type="text/javascript">
  
-                      // Gets the location and, once it is known, evaluates callback on it.
-                        function getLocation(callback) {
-                            if (navigator.geolocation) {
-                                navigator.geolocation.getCurrentPosition(
-                                    function (position) {
-                                        callback(position);
-                                    }
-                                );
-                            } else {
-                                // TODO: error here. 
-                            }
-                        }
-                    
-
 
                         function renderButton() {
                             // Only sign in on first page load.
@@ -192,10 +178,17 @@
                                 $('#<%=name.ClientID%>').val("John Doe");
                                 $('#<%=photoURL.ClientID%>').val("URL");
 
-                                $('#<%=latitude.ClientID%>').val("41.5");
-                                $('#<%=longitude.ClientID%>').val("53.4343");
-                                $('#<%=sendLoginAndLocation.ClientID%>').click();
-
+                                if (navigator.geolocation) {
+                                    navigator.geolocation.getCurrentPosition(function (position) {
+                                        $('#<%=latitude.ClientID%>').val(position.coords.latitude);
+                                        $('#<%=longitude.ClientID%>').val(position.coords.longitude);
+                                        $('#<%=sendLoginAndLocation.ClientID%>').click();
+                                    });
+                                } else {
+                                    $('#<%=latitude.ClientID%>').val("41.5");
+                                    $('#<%=longitude.ClientID%>').val("53.4343");
+                                    $('#<%=sendLoginAndLocation.ClientID%>').click();
+                                }
                             }
                         }
 

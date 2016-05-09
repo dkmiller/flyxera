@@ -10,6 +10,7 @@ namespace flyxera3
     public partial class WebForm1 : System.Web.UI.Page
     {
         const int UPDATE = 0;
+        const int REMOVE = 1;
 
         private static Group flyxera;
 
@@ -43,10 +44,12 @@ namespace flyxera3
                 {
                     flyxera = new Group("flyxera");
                     AddHandlers();
-                    /*Debug("before persist");
-                    flyxera.Persistent("flyxera");
-                    Debug("after persist");*/
+                    
                     flyxera.Join();
+
+                    Debug("before persist");
+                    flyxera.Persistent("flyxera");
+                    Debug("after persist");
                 }
             }
 
@@ -87,6 +90,8 @@ namespace flyxera3
             // Send offer information to group. 
             Task.Factory.StartNew(() => {
                 flyxera.Send(UPDATE, CurrentOffer);
+                Debug("Before make checkpoint: " + LocalOffers.FirstOrDefault().Key);
+                flyxera.MakeCheckpoint(flyxera.GetView());
             });
 
             ListOfOffers.DataSource = LocalOffers.Values.ToList();
@@ -95,7 +100,7 @@ namespace flyxera3
 
         protected void AcceptButton_Click(object sender, EventArgs e)
         {
-            // TODO
+            
         }
 
         protected void ShowAllOffers_Click(object sender, EventArgs e)
@@ -110,8 +115,13 @@ namespace flyxera3
 
         protected void ShowMyOffers_Click(object sender, EventArgs e)
         {
-            // TODO: sort by date
-            ListOfOffers.DataSource = LocalOffers.Values.Where(x => x.Offerer == CurrentUser);
+            var sorted = from o
+                         in LocalOffers.Values
+                         where o.Offerer == CurrentUser
+                         orderby DateTime.Parse(o.Time) descending
+                         select o;
+            
+            ListOfOffers.DataSource = sorted;
             ListOfOffers.DataBind();
         }
 
@@ -128,20 +138,29 @@ namespace flyxera3
             });
             flyxera.RegisterMakeChkpt(delegate (Vsync.View nv)
             {
-                foreach(User u in LocalUsers.Values)
+                Debug("Begin make checkpoint");
+                foreach (User u in LocalUsers.Values) {
+                    Debug("Sending user " + u.Email);
                     flyxera.SendChkpt(u);
-                foreach(Offer o in LocalOffers.Values)
+                }
+                foreach (Offer o in LocalOffers.Values)
+                {
+                    Debug("Sending Offer: " + o.ShortDescription);
                     flyxera.SendChkpt(o);
+                }
                 flyxera.EndOfChkpt();
+                Debug("End make checkpoint");
             });
             
             flyxera.RegisterLoadChkpt((Action<User>)delegate (User u) {
+                Debug("Load checkpoint(User) " + u.Email);
                 LocalUsers[u.Email] = u;
             });
             flyxera.RegisterLoadChkpt((Action<Offer>)delegate (Offer o) {
+                Debug("Load checkpoint(Offer)" + o.ShortDescription);
                 LocalOffers[o.Id] = o;
             });
-
+            /*
             flyxera.RegisterInitializer(delegate {
                 LocalUsers["dm635@cornell.edu"] = new User("dm635@cornell.edu", "Daniel Miller", "URL");
 
@@ -149,6 +168,7 @@ namespace flyxera3
                 //        { "em569@cornell.edu", new User("em569@cornell.edu", "Ege Mihmanli", "URL") }
                 
             });
+            */
         }
 
 

@@ -1,12 +1,16 @@
 ﻿using System;
+using System.Runtime.Serialization;
 using Vsync;
 
 namespace flyxera3
 {
+    [DataContract]
     public class Place : ISelfMarshalled
     {
-        public double Latitude;
-        public double Longitude;
+        [DataMember]
+        public double Latitude { get; set; }
+        [DataMember]
+        public double Longitude { get; set; }
 
         public Place(string latitude, string longitude)
         {
