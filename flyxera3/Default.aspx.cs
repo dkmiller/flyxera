@@ -84,11 +84,22 @@ namespace flyxera3
             CurrentUser = new User(email.Value, name.Value, photoURL.Value);
             CurrentLocation = new Place(latitude.Value, longitude.Value);
             if (!LocalUsers.ContainsKey(email.Value))
-                Task.Factory.StartNew(
-                    () =>
-                    {
-                        flyxera.Send(UPDATE, CurrentUser);
-                    });
+            {
+                LocalUsers.Add(CurrentUser.Email, CurrentUser);
+                FlushUpdate<User>(UPDATE, CurrentUser);
+            }
+            UpdateOffers();
+        }
+
+        private void FlushUpdate<T>(int i, T t)
+        {
+            Task.Factory.StartNew(
+                   () =>
+                   {
+                       flyxera.Send(i, t);
+                       DumpToFile(USER_FILE, LocalUsers);
+                       DumpToFile(OFFER_FILE, LocalOffers);
+                   });
             UpdateOffers();
         }
 
@@ -104,16 +115,7 @@ namespace flyxera3
                 CurrentUser);
 
             LocalOffers.Add(CurrentOffer.Id, CurrentOffer);
-
-            // Send offer information to group. 
-            Task.Factory.StartNew(
-                () =>
-                {
-                    flyxera.Send(UPDATE, CurrentOffer);
-                    DumpToFile(USER_FILE, LocalUsers);
-                    DumpToFile(OFFER_FILE, LocalOffers);
-                });
-            UpdateOffers();
+            FlushUpdate<Offer>(UPDATE, CurrentOffer);
         }
 
         protected void AcceptButton_Click(object sender, EventArgs e)
@@ -195,6 +197,6 @@ namespace flyxera3
         }
 
 
-        public static void Debug(string message) => System.Diagnostics.Debug.WriteLine("!!FLYXERA: " + message);
+        // public static void Debug(string message) => System.Diagnostics.Debug.WriteLine("!!FLYXERA: " + message);
     }
 }
