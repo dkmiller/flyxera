@@ -245,7 +245,7 @@ ModelManifest.xml
 .fake/
 
 #project specific persistence files
-.json
+*.json
 
 #azure publish files
-.pubxml
+*.pubxml
