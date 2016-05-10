@@ -88,7 +88,7 @@ namespace flyxera3
         {
             // Read user information and location from client.
             CurrentUser = new User(email.Value, name.Value, photoURL.Value);
-            CurrentLocation = new Place("42.4448856", "-76.481227");
+            CurrentLocation = new Place(latitude.Value, longitude.Value);
             if (!LocalUsers.ContainsKey(email.Value))
             {
                 LocalUsers.Add(CurrentUser.Email, CurrentUser);
