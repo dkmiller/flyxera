@@ -70,7 +70,7 @@
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
     <Reference Include="Vsync">
-      <HintPath>..\..\..\..\Downloads\Vsync.dll</HintPath>
+      <HintPath>..\..\Vsync.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -84,6 +84,7 @@
     <None Include="Properties\PublishProfiles\flyxera320160507062717 - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\flyxera320160508025601 - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\flyxera320160508040739 - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\flyxeratest.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

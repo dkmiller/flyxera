@@ -63,15 +63,14 @@ namespace flyxera3
         private void DumpToFile(string filename, object o)
         {
             var jsonString = JsonConvert.SerializeObject(o);
-            var filenameFull = Path.Combine(Environment.GetFolderPath(
-                Environment.SpecialFolder.ApplicationData), filename);
+            var filenameFull = Server.MapPath(filename);
             File.WriteAllText(filenameFull, jsonString);
+            Debug("ZAZAAZAZAAZAZA" + Server.MapPath(filename));
         }
 
         private Dictionary<string, T> LoadFromFile<T>(string filename)
         {
-            var filenameFull = Path.Combine(Environment.GetFolderPath(
-                Environment.SpecialFolder.ApplicationData), filename);
+            var filenameFull = Server.MapPath(filename);
 
             Debug(filenameFull);
 
@@ -89,7 +88,7 @@ namespace flyxera3
         {
             // Read user information and location from client.
             CurrentUser = new User(email.Value, name.Value, photoURL.Value);
-            CurrentLocation = new Place(latitude.Value, longitude.Value);
+            CurrentLocation = new Place("42.4448856", "-76.481227");
             if (!LocalUsers.ContainsKey(email.Value))
             {
                 LocalUsers.Add(CurrentUser.Email, CurrentUser);
