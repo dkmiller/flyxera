@@ -14,6 +14,7 @@ namespace flyxera3
         const int REMOVE = 1;
         const string USER_FILE = "flyxera-User.json";
         const string OFFER_FILE = "flyxera-Offer.json";
+        const string FILE_PREFIX = "~/App_Data/";
 
         private static Group flyxera;
 
@@ -63,14 +64,14 @@ namespace flyxera3
         private void DumpToFile(string filename, object o)
         {
             var jsonString = JsonConvert.SerializeObject(o);
-            File.WriteAllText(filename, jsonString);
+            File.WriteAllText(FILE_PREFIX + filename, jsonString);
         }
 
         private Dictionary<string, T> LoadFromFile<T>(string filename)
         {
-            if (File.Exists(filename))
+            if (File.Exists(FILE_PREFIX + filename))
             {
-                using (StreamReader r = new StreamReader(filename))
+                using (StreamReader r = new StreamReader(FILE_PREFIX + filename))
                     return JsonConvert.DeserializeObject<Dictionary<string,T>>(r.ReadToEnd());
             } else
             {
