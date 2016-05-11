@@ -33,8 +33,13 @@ namespace flyxera3
         {
             rng.GetBytes(token);
             Id = Convert.ToBase64String(token);
-
-            Amount = Convert.ToDouble(amount);
+            try
+            {
+                Amount = Convert.ToDouble(amount);
+            }catch(FormatException)
+            {
+                Amount = 0;
+            }
             Location = location;
             Time = time.ToString();
             ShortDescription = shortDescription;
