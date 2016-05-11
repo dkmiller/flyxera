@@ -63,12 +63,10 @@ namespace flyxera3
         /// Writes the object o to the file with name filename in the server's 
         /// App_Data folder as JSON. 
         /// </summary>
-        private void DumpToFile(string filename, object o)
-        {
-            var jsonString = JsonConvert.SerializeObject(o);
-            var filenameFull = Server.MapPath(filename);
-            File.WriteAllText(filenameFull, jsonString);
-        }
+        private void WriteToFile(string filename, object o) => 
+            File.WriteAllText(
+                Server.MapPath(filename),
+                JsonConvert.SerializeObject(o));
 
         /// <summary>
         /// The reverse of DumpToFile. Loads a Dictionary of type string : 
@@ -77,10 +75,7 @@ namespace flyxera3
         private Dictionary<string, T> LoadFromFile<T>(string filename)
         {
             var filenameFull = Server.MapPath(filename);
-
-            if (CurrentLocation == null)
-                CurrentLocation = new Place("43", "42");
-
+            
             if (File.Exists(filenameFull))
             {
                 using (StreamReader r = new StreamReader(filenameFull))
@@ -91,6 +86,9 @@ namespace flyxera3
             }
         }
 
+        /// <summary>
+        /// Called when the client POSTs back user and location information. 
+        /// </summary>
         protected void DataAndLocation_Click(object sender, EventArgs e)
         {
             // Read user information and location from client.
@@ -103,18 +101,27 @@ namespace flyxera3
             FlushUpdate(UPDATE, CurrentUser);
         }
 
+        /// <summary>
+        /// Calls flyxera.Send(i,t) in a new thread, writes all changes to 
+        /// local files, and updates the client's list of offers. 
+        /// </summary>
         private void FlushUpdate<T>(int i, T t)
         {
             Task.Factory.StartNew(
                    () =>
                    {
                        flyxera.Send(i, t);
-                       DumpToFile(USER_FILE, LocalUsers);
-                       DumpToFile(OFFER_FILE, LocalOffers);
+                       WriteToFile(USER_FILE, LocalUsers);
+                       WriteToFile(OFFER_FILE, LocalOffers);
                    });
             UpdateOffers();
         }
 
+        /// <summary>
+        /// Called when the client creates a new offer. Creates the 
+        /// corresponding server-side object, adds it to the local dictionary, 
+        /// and sends the new data. 
+        /// </summary>
         protected void TestCreateOffer_Click(object sender, EventArgs e)
         {
             if (CurrentLocation == null)
@@ -139,10 +146,7 @@ namespace flyxera3
             FlushUpdate(REMOVE, Id.Value);
         }
 
-        protected void ShowAllOffers_Click(object sender, EventArgs e)
-        {
-            UpdateOffers();
-        }
+        protected void ShowAllOffers_Click(object sender, EventArgs e) => UpdateOffers();
 
         protected void ShowMyOffers_Click(object sender, EventArgs e)
         {
@@ -156,6 +160,9 @@ namespace flyxera3
             ListOfOffers.DataBind();
         }
 
+        /// <summary>
+        /// Registers UPDATE, REMOVE, and checkpoint handlers with flyxera. 
+        /// </summary>
         protected void AddHandlers()
         {
             flyxera.RegisterHandler(UPDATE, (Action<User>)delegate (User u)
@@ -189,6 +196,10 @@ namespace flyxera3
         }
 
 
+        /// <summary>
+        /// Computes the closest offers to CurrentUser and updates the client's 
+        /// repeater accordingly. 
+        /// </summary>
         public void UpdateOffers()
         {
             if (CurrentLocation == null)
@@ -200,7 +211,7 @@ namespace flyxera3
                          orderby o.Location.DistanceTo(CurrentLocation) ascending
                          select o;
             
-            ListOfOffers.DataSource = sorted.Take(200);
+            ListOfOffers.DataSource = sorted.Take(20);
             ListOfOffers.DataBind();
         }
     }
