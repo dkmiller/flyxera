@@ -14,6 +14,7 @@ namespace flyxera3
         const int REMOVE = 1;
         const string USER_FILE = "flyxera-User.json";
         const string OFFER_FILE = "flyxera-Offer.json";
+        const string MASTER_URL = "flyxera320160511094352.azurewebsites.net";
 
         private static Group flyxera;
 
@@ -30,6 +31,8 @@ namespace flyxera3
             {
                 Environment.SetEnvironmentVariable("VSYNC_MUTE", "true");
                 Environment.SetEnvironmentVariable("VSYNC_LOGGED", "false");
+                Environment.SetEnvironmentVariable("ISIS_UNICAST_ONLY", "true");
+                Environment.SetEnvironmentVariable("ISIS_HOSTS", MASTER_URL);
 
                 if (LocalUsers == null)
                     LocalUsers = new Dictionary<string, User>();
