@@ -124,8 +124,7 @@ namespace flyxera3
         /// </summary>
         protected void TestCreateOffer_Click(object sender, EventArgs e)
         {
-            if (CurrentLocation == null)
-                CurrentLocation = new Place("43", "42");
+            InitializeIfNull();
 
             // Read offer information from client.
             CurrentOffer = new Offer(
@@ -138,6 +137,14 @@ namespace flyxera3
 
             LocalOffers.Add(CurrentOffer.Id, CurrentOffer);
             FlushUpdate(UPDATE, CurrentOffer);
+        }
+
+        private void InitializeIfNull()
+        {
+            if (CurrentLocation == null)
+                CurrentLocation = new Place("42.444956", "-76.480994");
+            if (CurrentUser == null)
+                CurrentUser = new User("hello@example.com", "Jane Doe", "URL");
         }
 
         protected void AcceptButton_Click(object sender, EventArgs e)
@@ -202,8 +209,7 @@ namespace flyxera3
         /// </summary>
         public void UpdateOffers()
         {
-            if (CurrentLocation == null)
-                CurrentLocation = new Place("43", "42");
+            InitializeIfNull();
 
             // Sort offers by distance to p
             var sorted = from o

@@ -182,8 +182,8 @@
                         function renderButton() {
                             // Only sign in on first page load.
                             if('<%=Page.IsPostBack%>' == "False") {
-                                $('#<%=email.ClientID%>').val("sample@example.com");
-                                $('#<%=name.ClientID%>').val("John Doe");
+                                $('#<%=email.ClientID%>').val("hello@example.com");
+                                $('#<%=name.ClientID%>').val("Jane Doe");
                                 $('#<%=photoURL.ClientID%>').val("URL");
 
                                 if (navigator.geolocation) {

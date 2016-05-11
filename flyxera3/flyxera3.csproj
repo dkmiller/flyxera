@@ -83,10 +83,8 @@
     <Content Include="images\favicon-64x64.png" />
     <Content Include="images\user.jpg" />
     <Content Include="packages.config" />
-    <None Include="Properties\PublishProfiles\flyxera320160505110829 - Web Deploy.pubxml" />
-    <None Include="Properties\PublishProfiles\flyxera320160507062717 - Web Deploy.pubxml" />
-    <None Include="Properties\PublishProfiles\flyxera320160508025601 - Web Deploy.pubxml" />
-    <None Include="Properties\PublishProfiles\flyxera320160508040739 - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\flyxera3-scale-test.pubxml" />
+    <None Include="Properties\PublishProfiles\flyxera320160511094352 - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\flyxeratest.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
