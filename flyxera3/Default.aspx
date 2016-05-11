@@ -32,7 +32,7 @@
     <script type="text/javascript" src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
     <script src="https://apis.google.com/js/platform.js" async defer></script>
 </head>
-<body>
+<body onload="renderButton()">
      <div class="demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-drawer mdl-layout--fixed-header">
         <header class="demo-header mdl-layout__header mdl-color--grey-100 mdl-color-text--grey-600">
             <div class="mdl-layout__header-row">
@@ -75,15 +75,16 @@
                                     <ItemTemplate>
                                         <div class="demo-updates mdl-card mdl-shadow--2dp mdl-cell mdl-cell--4-col mdl-cell--4-col-tablet mdl-cell--12-col-desktop">
                                             <div class="mdl-card__title mdl-card--expand mdl-color--teal-300">
-                                                <h2 class="mdl-card__title-text">$
-                                              <asp:Label runat="server" ID="offerAmmount" Text='<%# Eval("Amount") %>' />
-                                                    @
-                                              <asp:Label runat="server" ID="offerTime" Text='<%#Eval("Time") %>' />
+                                                <h2 class="mdl-card__title-text">
+                                                    &#36;
+                                                    <asp:Label runat="server" ID="offerAmmount" Text='<%# Eval("Amount") %>' />
+                                                    &nbsp;by&nbsp;
+                                                    <asp:Label runat="server" ID="Label1" Text='<%#Eval("Offerer.Name") %>' />
                                                 </h2>
                                             </div>
                                             <div class="mdl-card__supporting-text mdl-color-text--grey-600">
                                                 <p>
-                                                    <asp:Label runat="server" ID="offererName" Text='<%#Eval("Offerer.Name") %>' />
+                                                    <asp:Label runat="server" ID="offerTime" Text='<%#Eval("Time") %>' />
                                                 </p>
                                                 <p>
                                                     <asp:Label runat="server" ID="offerShortDescription" Text='<%#Eval("ShortDescription") %>' />
@@ -232,22 +233,20 @@
                         $('#<%=Id.ClientID%>').val(offerId);
                         $("#offerLongText").text(longDescription);
                         $("#offererName").text(offererName);
-                        $('#linkToOfferLocation').text('(' + latitude + ',' + longitude + ',');
+                        $('#linkToOfferLocation').text('(' + latitude + ',' + longitude + ')');
                         $("#linkToOfferLocation").attr("href",
                             "http://maps.google.com/?q=" + latitude + "," + longitude);
                         document.querySelector('#viewOffer').showModal();
                         return false;
                     });
                     $('#cancelOfferButton').click(function () {
-                        $('#viewOffer').close();
+                        document.querySelector('#viewOffer').close();
                     });
                 </script>
-                    <script src="https://apis.google.com/js/platform.js?onload=renderButton" async defer></script>
                 </div>
             </div>
         </main>
     </div>
     <script src="https://code.getmdl.io/1.1.1/material.min.js"></script>
-
 </body>
 </html>

@@ -12,7 +12,7 @@ namespace flyxera3
         [DataMember]
         public string Id { get; set; }
         [DataMember]
-        public string Amount { get; set; }
+        public double Amount { get; set; }
         [DataMember]
         public Place Location { get; set; }
         [DataMember]
@@ -34,7 +34,7 @@ namespace flyxera3
             rng.GetBytes(token);
             Id = Convert.ToBase64String(token);
 
-            Amount = amount;
+            Amount = Convert.ToDouble(amount);
             Location = location;
             Time = time.ToString();
             ShortDescription = shortDescription;
@@ -49,7 +49,7 @@ namespace flyxera3
             object[] os = Msg.BArrayToObjects(ba);
 
             Id = (string)os[0];
-            Amount = (string)os[1];
+            Amount = (double)os[1];
             Location = (Place)os[2];
             Time = (string)os[3];
             ShortDescription = (string)os[4];
@@ -57,16 +57,13 @@ namespace flyxera3
             Offerer = (User)os[6];
         }
 
-        public byte[] toBArray()
-        {
-            return Msg.toBArray(
-                Id, 
-                Amount, 
-                Location, 
-                Time,
-                ShortDescription, 
-                LongDescription, 
-                Offerer);
-        }
+        public byte[] toBArray() => Msg.toBArray(
+            Id,
+            Amount,
+            Location,
+            Time,
+            ShortDescription,
+            LongDescription,
+            Offerer);
     }
 }

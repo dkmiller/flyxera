@@ -47,7 +47,6 @@ namespace flyxera3
                 {
                     flyxera = new Group("flyxera");
                     AddHandlers();
-                    
                     flyxera.Join();
 
                     // Only load from file if initializing the group. 
@@ -65,14 +64,11 @@ namespace flyxera3
             var jsonString = JsonConvert.SerializeObject(o);
             var filenameFull = Server.MapPath(filename);
             File.WriteAllText(filenameFull, jsonString);
-            Debug("ZAZAAZAZAAZAZA" + Server.MapPath(filename));
         }
 
         private Dictionary<string, T> LoadFromFile<T>(string filename)
         {
             var filenameFull = Server.MapPath(filename);
-
-            Debug(filenameFull);
 
             if (File.Exists(filenameFull))
             {
@@ -92,9 +88,8 @@ namespace flyxera3
             if (!LocalUsers.ContainsKey(email.Value))
             {
                 LocalUsers.Add(CurrentUser.Email, CurrentUser);
-                FlushUpdate<User>(UPDATE, CurrentUser);
             }
-            UpdateOffers();
+            FlushUpdate(UPDATE, CurrentUser);
         }
 
         private void FlushUpdate<T>(int i, T t)
@@ -121,20 +116,13 @@ namespace flyxera3
                 CurrentUser);
 
             LocalOffers.Add(CurrentOffer.Id, CurrentOffer);
-            FlushUpdate<Offer>(UPDATE, CurrentOffer);
+            FlushUpdate(UPDATE, CurrentOffer);
         }
 
         protected void AcceptButton_Click(object sender, EventArgs e)
         {
             LocalOffers.Remove(Id.Value);
-            Task.Factory.StartNew(
-             () =>
-             {
-                 flyxera.Send(REMOVE, Id.Value);
-                 DumpToFile(USER_FILE, LocalUsers);
-                 DumpToFile(OFFER_FILE, LocalOffers);
-             });
-            UpdateOffers();
+            FlushUpdate(REMOVE, Id.Value);
         }
 
         protected void ShowAllOffers_Click(object sender, EventArgs e)
@@ -169,23 +157,20 @@ namespace flyxera3
                 if (LocalOffers.ContainsKey(id))
                     LocalOffers.Remove(id);
             });
-            flyxera.RegisterMakeChkpt(delegate (Vsync.View nv)
+            flyxera.RegisterMakeChkpt(delegate (View v)
             {
-                foreach (User u in LocalUsers.Values) {
-                    flyxera.SendChkpt(u);
-                }
-                foreach (Offer o in LocalOffers.Values)
-                {
-                    flyxera.SendChkpt(o);
-                }
+                flyxera.SendChkpt(LocalUsers.Values.ToArray());
+                flyxera.SendChkpt(LocalOffers.Values.ToArray());
                 flyxera.EndOfChkpt();
             });
             
-            flyxera.RegisterLoadChkpt((Action<User>)delegate (User u) {
-                LocalUsers[u.Email] = u;
+            flyxera.RegisterLoadChkpt((Action<User[]>)delegate (User[] us) {
+                foreach(var u in us)
+                    LocalUsers[u.Email] = u;
             });
-            flyxera.RegisterLoadChkpt((Action<Offer>)delegate (Offer o) {
-                LocalOffers[o.Id] = o;
+            flyxera.RegisterLoadChkpt((Action<Offer[]>)delegate (Offer[] os) {
+                foreach(var o in os)
+                    LocalOffers[o.Id] = o;
             });
         }
 
@@ -198,11 +183,8 @@ namespace flyxera3
                          orderby o.Location.DistanceTo(CurrentLocation) ascending
                          select o;
             
-            ListOfOffers.DataSource = sorted.Take<Offer>(200);
+            ListOfOffers.DataSource = sorted.Take(200);
             ListOfOffers.DataBind();
         }
-
-
-        public static void Debug(string message) => System.Diagnostics.Debug.WriteLine("!!FLYXERA: " + message);
     }
 }
