@@ -59,6 +59,10 @@ namespace flyxera3
             }
         }
 
+        /// <summary>
+        /// Writes the object o to the file with name filename in the server's 
+        /// App_Data folder as JSON. 
+        /// </summary>
         private void DumpToFile(string filename, object o)
         {
             var jsonString = JsonConvert.SerializeObject(o);
@@ -66,9 +70,16 @@ namespace flyxera3
             File.WriteAllText(filenameFull, jsonString);
         }
 
+        /// <summary>
+        /// The reverse of DumpToFile. Loads a Dictionary of type string : 
+        /// T from the file with name filename in the Server's App_Data. 
+        /// </summary>
         private Dictionary<string, T> LoadFromFile<T>(string filename)
         {
             var filenameFull = Server.MapPath(filename);
+
+            if (CurrentLocation == null)
+                CurrentLocation = new Place("43", "42");
 
             if (File.Exists(filenameFull))
             {
@@ -106,6 +117,9 @@ namespace flyxera3
 
         protected void TestCreateOffer_Click(object sender, EventArgs e)
         {
+            if (CurrentLocation == null)
+                CurrentLocation = new Place("43", "42");
+
             // Read offer information from client.
             CurrentOffer = new Offer(
                 amount.Value,
@@ -177,6 +191,9 @@ namespace flyxera3
 
         public void UpdateOffers()
         {
+            if (CurrentLocation == null)
+                CurrentLocation = new Place("43", "42");
+
             // Sort offers by distance to p
             var sorted = from o
                          in LocalOffers.Values
